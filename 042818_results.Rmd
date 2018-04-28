@@ -71,9 +71,6 @@ ggplot(myfig1,aes(x = Treatment, y = emmean)) +
 ```
 **Test of effects of Treatment on environmental variables**
 ```{r}
-#read csv file
-env<-read.csv('gm_ew_totals.csv',header=TRUE)
-#head of the csv file
 head(env)
 #ANOVA of pH as a factor of treatment with site accounted for
 PHtest<-aov(ph~Treatment+site,data=env)
