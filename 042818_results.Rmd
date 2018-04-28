@@ -4,27 +4,139 @@ author: "Michelle R. Jackson"
 date: "4/28/2018"
 output: html_document
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+**Figure 1/ANOVA table 1- looking at treatment effects on earthworms**
+```{r}
+#read csv file
+#NOTE: you have to set the working directory from within Rstudio
+env<-read.csv('gm_ew_totals.csv',header=TRUE)
+#display the beginning of the .csv file
+head(env)
+#looking at earthworm biomass as a factor of treatment & site
+ewmodel1<-aov(ew~site+Treatment, data=env)
+#install 'car' package to perform type II ANOVAs https://cran.r-project.org/web/packages/car/index.html
+library(car)
+#run type II ANOVA -- treatment has a significant effect on earthworm biomass p=0.01532
+Anova(ewmodel1, type="II")
+#look at the variance inflation factors of the model 
+vif(ewmodel1)
+#Tukey test on Treatment - invaded is different than control/marginally significantly different than eradicated
+TukeyHSD(ewmodel1)
+#install 'effects' package to look at treatment effects https://cran.r-project.org/web/packages/effects/index.html
+library(effects) 
+#plot effects of the model
+plot(allEffects(ewmodel1)) 
+#run 'agricolae' package to get additional information for tukey tests https://cran.r-project.org/web/packages/agricolae/index.html
+library(agricolae)
+(HSD.test(ewmodel1, "Treatment"))
+#run 'multcomp' package to get additional information for tukey tests https://cran.r-project.org/web/packages/multcomp/index.html
+library(multcomp)
+mc = glht(ewmodel1,
+          mcp(Treatment = "Tukey"))
+summary(mc)
+#run 'visreg' package to visualize regression https://cran.r-project.org/web/packages/visreg/index.html
+library(visreg)
+visreg(ewmodel1)
+summary(visreg(ewmodel1))
+#run 'margins' package to calculate marginal or patial effects of the model https://cran.r-project.org/web/packages/margins/index.html
+library(margins)
+margins(ewmodel1)
+plot(margins(ewmodel1))
+#run 'emmeans' package for least-squares means of the model - previously lsmeans package, but that's being phased out of R https://cran.r-project.org/web/packages/emmeans/vignettes/transition-from-lsmeans.html
+library(emmeans)
+#run 'ggplot2' package to create figure of the model https://cran.r-project.org/web/packages/ggplot2/README.html
+library(ggplot2)
+#calculate emmeans of the treatment of the model 
+emmeans(ewmodel1,"Treatment")
+#create data frame for the model fitted with emmeans
+fig1<-summary(emmeans(ewmodel1,"Treatment"))
+fig1
+names(fig1)
+#Data frame for the figure with code for ggplot parameters 
+myfig1<-transform(fig1,Treatment=reorder(Treatment,-emmean))
+ggplot(myfig1,aes(x = Treatment, y = emmean)) + 
+  geom_bar(position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymax=emmean+SE, ymin=emmean-SE),
+                width=0.1, size=0.5, color="black", position=position_dodge(.9))+  labs(x = "Treatment",
+                                                                                       y = "Earthworm Biomass (g)")  +
+  theme_bw()+
+  theme(axis.text = element_text(size=12,colour = "black"))+
+  theme(axis.title.x = element_text(size=12,face="bold")) +
+  theme(axis.title.y = element_text(size=12,face="bold")) +
+  theme(legend.title = element_text(size=12, face="bold"))+
+  theme(legend.text = element_text(size = 12))+
+  scale_y_continuous(expand = c(0,0)) +
+  expand_limits(y=7) +
+  theme(legend.position = "none")+
+  theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.line = element_line(colour = "black"))
+```
+**Figure 2/ANOVA table 1- looking at treatment effects on earthworms**
+```{r}
+#read in csv file
+allvariables<-read.csv('garlicMustardEarthworm_15March_2018.csv',header=TRUE)
+#show head of data frame
+head(allvariables)
+#test of fit with shannon diversity as a factor of earthworm biomass,treatment & site
+shandiv<-lm(shannon~mass+site+Treatment,data=everything)
+#type II ANOVA of this fit
+Anova(shandiv, type="II")
+#summary of ANOVA
+summary(shandiv)
+#new test of fit with shannon diversity as a factor of an interaction between earthworm biomass*treatment and site
+shandiv2<-lm(shannon~site+Treatment*mass, data=everything)
+#type II ANOVA of new fit
+Anova(shandiv2, type="II")
+#summary of ANOVA
+summary(shandiv2)
+#plot the effects of this new model fit
+plot(allEffects(shandiv2))
+#install 'jtools' package https://cran.r-project.org/web/packages/jtools/index.html
+library(jtools)
+#summary of the model reported
+summ(shandiv2)
+summ(shandiv2, scale = TRUE)
+#list of hex codes for colors associated with color-blind palette "cbPalette"
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+#command for interaction plot
+interact_plot(shandiv2, pred = "mass", modx = "Treatment", plot.points = TRUE)
+#revised model with 'eradicated' sites excluded
+shandiv3<-lm(shannon~site+mass, data=everything[everything$Treatment=="Eradicated",])
+#summary of the new model
+summary(shandiv3)
+#interaction plot of the original model with code for ggplot parameters 
+interact_plot(shandiv2, pred = "mass", modx ="Treatment", plot.points = TRUE, x.label = "Earthworm Biomass (g)", y.label = "Native Plant Diversity", legend.main = "Treatment") +
+  theme(axis.text = element_text(size=12))+
+  theme(axis.title.x = element_text(size=12,face="bold")) +
+  theme(axis.title.y = element_text(size=12,face="bold")) +
+  theme(legend.text = element_text(size = 12))+
+  scale_colour_manual(values=cbPalette)
+```
+**Test of effects of Treatment on environmental variables**
+```{r}
+#read csv file
+env<-read.csv('gm_ew_totals.csv',header=TRUE)
+#head of the csv file
+head(env)
+#ANOVA of pH as a factor of treatment with site accounted for
+PHtest<-aov(ph~Treatment+site,data=env)
+#summary of aforementioned ANOVA
+summary(PHtest)
+#plot the effects of the ANOVA
+plot(allEffects(PHtest))
+#ANOVA of N as a factor of treatment with site accounted for
+Ntrest<-aov(nitrogen~Treatment+site,data=env)
+#summary of N ANOVA
+summary(Ntrest)
+#ANOVA of plot moisture as a factor of treatment with site accounted for
+moisturetest<-aov(moisture~Treatment+site,data=env)
+#summary of moisture ANOVA
+summary(moisturetest)
+#looking at stem counts
+#read in csv file
+stemcounts<-read.csv('ew_ms_native_plant_spp.csv',header=TRUE)
+#ANOVA of stem counts as a factor of site with treatment accounted for 
+stemeffects<-aov(stem~site+Treatment,data=stemcounts)
+#summary of stem counts
+summary(stemeffects)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
