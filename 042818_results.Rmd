@@ -4,6 +4,10 @@ author: "Michelle R. Jackson"
 date: "4/28/2018"
 output: github_document
 ---
+```{r setup, include = FALSE, cache = FALSE}
+knitr::opts_chunk$set(error = TRUE)
+```
+```
 **Figure 1/ANOVA table 1- looking at treatment effects on earthworms**
 ```{r}
 #read csv file
@@ -68,9 +72,7 @@ ggplot(myfig1,aes(x = Treatment, y = emmean)) +
   expand_limits(y=7) +
   theme(legend.position = "none")+
   theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.line = element_line(colour = "black"))
-```
-**Test of effects of Treatment on environmental variables**
-```{r}
+#Test of effects of Treatment on environmental variables**
 head(env)
 #ANOVA of pH as a factor of treatment with site accounted for
 PHtest<-aov(ph~Treatment+site,data=env)
