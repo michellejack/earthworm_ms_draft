@@ -2,7 +2,7 @@
 title: "Draft Results"
 author: "Michelle R. Jackson"
 date: "4/28/2018"
-output: html_document
+output: github_document
 ---
 **Figure 1/ANOVA table 1- looking at treatment effects on earthworms**
 ```{r}
