@@ -1,4 +1,4 @@
-Draft Results
+Results & Analyses for Earthworm MS by MRJ
 ================
 Michelle R. Jackson
 4/28/2018
@@ -165,8 +165,8 @@ summary(mc)
     ## Linear Hypotheses:
     ##                           Estimate Std. Error t value Pr(>|t|)  
     ## Eradicated - Control == 0   0.7033     1.0946   0.643   0.7994  
-    ## Invaded - Control == 0      3.4983     1.0946   3.196   0.0167 *
-    ## Invaded - Eradicated == 0   2.7950     1.0946   2.554   0.0562 .
+    ## Invaded - Control == 0      3.4983     1.0946   3.196   0.0166 *
+    ## Invaded - Eradicated == 0   2.7950     1.0946   2.554   0.0561 .
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## (Adjusted p values reported -- single-step method)
