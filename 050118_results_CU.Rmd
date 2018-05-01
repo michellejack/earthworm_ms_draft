@@ -12,12 +12,12 @@ output: html_document
 #calculates diversity of native plant species, 
 #calculates abundance of fxnl groups, 
 #runs PERMANOVA, and creates NMDS plot.
-
 #################################
+```{r}
 library(vegan) #for adonis and nmds
 library(dplyr) #for summarizing
 library(reshape2) #for melting and casting
-
+```
 ##### Open data#####
 #earthworm data from Michelle, March 2018
 ```{r}
