@@ -20,117 +20,147 @@ library(reshape2) #for melting and casting
 
 ##### Open data#####
 #earthworm data from Michelle, March 2018
+```{r}
 wormData<-read.csv(".\\dataForR\\earthwormData.csv")
-
+```
 #functional group look-up table, derived from master sheet from Erin, February 2018
+```{r}
 fxnLUT<-read.csv(".\\dataForR\\fxnlGroupByCode.csv")
-
+```
 #plants from Erin - christine cleaned up by removing canopy trees
+```{r}
 allPlants<-read.csv(".\\dataForR\\allCommunity_canopyRemoved_Feb2018.csv")
 names(allPlants)
-
+```
 ##### Clean data ######
 #subset by sites in earthworm dataset
+```{r}
 allPlants_just2Sites<-allPlants[allPlants$site=="HF"|
                                             allPlants$site=="MC",]
+```
 #subset by 2017 and remove sprayed treatment
+```{r}
 allPlants_just2Sites2017<-allPlants_just2Sites[allPlants_just2Sites$year=="2017"&allPlants_just2Sites$treatment!="s",]
-
+```
 #get rid of plants without any presence in the 2 sites in 2017
+```{r}
 community<-allPlants_just2Sites2017[,-c(1:4)]
 community_ew<-community[,(colSums(community)!=0)]
-
+```
 #take out unknown seedling
+```{r}
 community_ew$unk_seedling <- NULL
-
+```
 #change prunse cotelydon to fraxam!!!!!!!!!!!!! prunse cotyeldon was actually white ash (Erin identified April 2018)
+```{r}
 community_ew$fraxam<-community_ew$fraxam+community_ew$prunse_cot
-
+```
 #get rid of prunse_cot
+```{r}
 community_ew$prunse_cot <- NULL
-
+```
 #double check there are 36 taxa (took away unknown seedling and prunse)
+```{r}
 ncol(community_ew) ==35 
-
+```
 ###### Calculate native total stem and shannon diversity #######
 #get rid of allipe columns and only other invasive, euonal (burning bursh)
+```{r}
 nonNative<-c("euonal","allipe_1","allipe_2","allipe_total")
 community_ew_native<-community_ew[,!(names(community_ew) %in% nonNative)] 
-
+```
 #calculate total stem count and shannon diversity
+```{r}
 nativeShannon<-diversity(community_ew_native)
 totalNativeStem<-rowSums(community_ew_native)
-
+```
 ######## Separate out by functional group ######
 
 ##### Merge with site info and worms ####
+```{r}
 communityByPlot<-cbind(allPlants_just2Sites2017[,c(1:4)],community_ew)
-
+```
 #melt data so that I can merge with functional group
+```{r}
 melted<-melt(communityByPlot,id.vars=c("plotID","site","treatment","year"))
 head(melted)
-
+```
 #remove funky double spaces in funcitonal groups look up table
+```{r}
 fxnLUT$functionalGroup<-gsub(" ", "", fxnLUT$functionalGroup, fixed = TRUE)
-
+```
 #merge melted data frame with functional gorup
+```{r}
 melted_fxn<-merge(melted,fxnLUT,by.x="variable",by.y="code",all.x=TRUE)
 nrow(melted)==nrow(melted_fxn) #double check
-
+```
 #Reclassify tree and shrubs as woody
+```{r}
 melted_fxn$functionalGroup[melted_fxn$functionalGroup=="Tree"|melted_fxn$functionalGroup=="Shrub"]<-"Woody"
 melted_fxn$functionalGroup[melted_fxn$functionalGroup=="Non-native"]<-"NonNative"
-
+```
 #drop allipe 1 and 2 and just keep total allipe
+```{r}
 melted_fxn<-melted_fxn[melted_fxn$variable!="allipe_1"&melted_fxn$variable!="allipe_2",]
 unique(melted_fxn$variable) #double check
-
-#sumamrize by functional group
+```
+#summamrize by functional group
+```{r}
 fxnlGroupStemCounts<-melted_fxn %>% group_by(plotID,functionalGroup) %>% summarize(stemCount=sum(value))
-
+```
 #cast as columns
+```{r}
 fxnlGroupCasted<-dcast(fxnlGroupStemCounts,plotID~functionalGroup,value.var="stemCount",fun.aggregate = sum)
-
+```
 ###### Put all data together ######
 # Bind diversity with community data 
+```{r}
 bindNativeMetrics<-cbind(communityByPlot,nativeShannon,totalNativeStem)
-
+```
 #merge functional groups with bindNativeMetrics
+```{r}
 mergeFxnl<-merge(bindNativeMetrics,fxnlGroupCasted,by="plotID")
-
+```
 #merge with earthworm data
+```{r}
 allData<-merge(mergeFxnl,wormData,by="plotID")
 nrow(allData) == 18
 write.csv(allData, ".\\output\\garlicMustardEarthworm_prunseCot_to_fraxam_9April2018.csv",row.names=F)
-
+```
 ############### Permanova ################
-
 #get rid of nonNative
+```{r}
 allData_native<-allData[,!(names(allData) %in% nonNative)] 
-
+```
 #get bray distances using abundances of native plants (subset df by these columns)
+```{r}
 brayDist<-vegdist(allData_native[,c(5:35)]) #*will change if community data changes
 myPerm<-adonis(brayDist ~treatment*mass, data = allData_native,strata=allData_native$site)
 myPerm
+```
 #note that p values will change each time based on seed (random generator for permutaitons). I am not sure what seed I used in manuscript!
- 
 ############### NMDS Plots ###########################
+```{r}
 meta<-metaMDS(allData_native[,c(5:35)]) 
-
+```
 #set parameters for NMDS
+```{r}
 treatment<- factor(allData$treatment)
 col.gr <- c("red", "gray40", "black") #red corresponds to invaded, gray to pulled, black to unvivdaded
 size<-log(allData$mass+1)*1.5 #for setting size of points proportional to worm biomass
-
+```
 #output
+```{r}
 svg(filename=".\\output\\nmds_withFrax.svg", 
     width=6.5, 
     height=6.5)
-
 plot(meta, type = "n",cex.axis=1.8, cex.lab=1.8)
 points(meta, display = "sites", cex = size, pch=19, col = col.gr[treatment])
+```
 #text(meta, display = "spec", cex=0.7)
+```{r}
 ordiellipse(meta, allData$site, conf = 0.95, label = TRUE,cex=1.8)
 dev.off()
+```
 
 
