@@ -151,7 +151,7 @@ size<-log(allData$mass+1)*1.5 #for setting size of points proportional to worm b
 ```
 #output
 ```{r}
-svg(filename=".\\output\\nmds_withFrax.svg", 
+svg(filename="nmds_withFrax.svg", 
     width=6.5, 
     height=6.5)
 plot(meta, type = "n",cex.axis=1.8, cex.lab=1.8)
