@@ -21,15 +21,15 @@ library(reshape2) #for melting and casting
 ##### Open data#####
 #earthworm data from Michelle, March 2018
 ```{r}
-wormData<-read.csv(".\\dataForR\\earthwormData.csv")
+wormData<-read.csv("earthwormData.csv")
 ```
 #functional group look-up table, derived from master sheet from Erin, February 2018
 ```{r}
-fxnLUT<-read.csv(".\\dataForR\\fxnlGroupByCode.csv")
+fxnLUT<-read.csv("fxnlGroupByCode.csv")
 ```
 #plants from Erin - christine cleaned up by removing canopy trees
 ```{r}
-allPlants<-read.csv(".\\dataForR\\allCommunity_canopyRemoved_Feb2018.csv")
+allPlants<-read.csv("allCommunity_canopyRemoved_Feb2018.csv")
 names(allPlants)
 ```
 ##### Clean data ######
