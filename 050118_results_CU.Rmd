@@ -2,7 +2,7 @@
 title: "Results from CU"
 author: "Michelle R. Jackson"
 date: "5/1/2018"
-output: html_document
+output: github_document
 ---
 #################################
 #Name: Christine Urbanowicz
