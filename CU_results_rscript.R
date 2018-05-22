@@ -115,13 +115,8 @@ meta<-metaMDS(allData_native[,c(5:35)])
 treatment<- factor(allData$treatment)
 col.gr <- c("#56B4E9", "#E69F00", "#000000") #red corresponds to invaded, gray to pulled, black to unvivdaded
 size<-log(allData$mass+1)*1.5 #for setting size of points proportional to worm biomass
-with(allData$treatment, legend("topright", legend = levels(Use), bty = "n",
-                      col = colvec, pch = 21, pt.bg = colvec))
 
 #output
-svg(filename="nmds_withFrax.svg", 
-    width=6.5, 
-    height=6.5)
 plot(meta, type = "n",cex.axis=1.8, cex.lab=1.8)
 points(meta, display = "sites", cex = size, pch=19, col = col.gr[treatment])
 #text(meta, display = "spec", cex=0.7)
