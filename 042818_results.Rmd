@@ -122,7 +122,7 @@ library(jtools)
 summ(shandiv2)
 summ(shandiv2, scale = TRUE)
 #list of hex codes for colors associated with color-blind palette "cbPalette"
-cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+cbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 #command for interaction plot
 interact_plot(shandiv2, pred = "mass", modx = "Treatment", plot.points = TRUE)
 #revised model with 'eradicated' sites excluded
