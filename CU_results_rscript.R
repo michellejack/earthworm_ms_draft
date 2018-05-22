@@ -113,8 +113,10 @@ meta<-metaMDS(allData_native[,c(5:35)])
 
 #set parameters for NMDS
 treatment<- factor(allData$treatment)
-col.gr <- c("red", "gray40", "black") #red corresponds to invaded, gray to pulled, black to unvivdaded
+col.gr <- c("#56B4E9", "#E69F00", "#000000") #red corresponds to invaded, gray to pulled, black to unvivdaded
 size<-log(allData$mass+1)*1.5 #for setting size of points proportional to worm biomass
+with(allData$treatment, legend("topright", legend = levels(Use), bty = "n",
+                      col = colvec, pch = 21, pt.bg = colvec))
 
 #output
 svg(filename="nmds_withFrax.svg", 
