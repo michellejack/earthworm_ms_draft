@@ -11,7 +11,8 @@
 library(vegan) #for adonis and nmds
 library(dplyr) #for summarizing
 library(reshape2) #for melting and casting
-
+getwd()
+setwd("/Users/michellerjackson/Documents/earthworm_ms_draft")
 ##### Open data#####
 #earthworm data from Michelle, March 2018
 wormData<-read.csv("earthwormData.csv")
@@ -113,15 +114,14 @@ meta<-metaMDS(allData_native[,c(5:35)])
 
 #set parameters for NMDS
 treatment<- factor(allData$treatment)
-col.gr <- c("#56B4E9", "#E69F00", "#000000") #red corresponds to invaded, gray to pulled, black to uninvaded
+col.gr <- c("#000000", "#E69F00", "#56B4E9") #red corresponds to invaded, gray to pulled, black to uninvaded
 size<-log(allData$mass+1)*1.5 #for setting size of points proportional to worm biomass
 
 #output
-plot(meta, type = "n",cex.axis=1.8, cex.lab=1.8)
+tiff("Plot4.tiff", width = 5, height = 5, units = 'in', res = 300, compression = 'lzw')
+plot(meta, type = "n",cex.axis=1.3, cex.lab=1.5)
 points(meta, display = "sites", cex = size, pch=19, col = col.gr[treatment])
 #text(meta, display = "spec", cex=0.7)
-ordiellipse(meta, allData$site, conf = 0.95, label = TRUE,cex=1.8)
-colvec <- c("#56B4E9", "#E69F00", "#000000")
-
-
-
+ordiellipse(meta, allData$site, conf = 0.95, label = TRUE,cex=1.5)
+legend("topleft", pch=c(19,19,19), col=c("black", "Goldenrod", "DeepSkyBlue"), c("Control", "Eradicated", "Invaded"), bty="o",  box.col="black", cex=.8)
+dev.off()

@@ -1,3 +1,4 @@
+library(ggplot2)
 #Data frame for the figure with code for ggplot parameters 
 myfig1<-transform(fig1,Treatment=reorder(Treatment,-emmean))
 ggplot(myfig1,aes(x = Treatment, y = emmean)) + 
@@ -32,8 +33,8 @@ figure1<-ggplot(myfig1,aes(x = Treatment, y = emmean)) +
   theme(legend.position = "none")+
   theme(panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),axis.line = element_line(colour = "black"))
 
-ggsave("myfig1.pdf", figure1, units="in", width=5, height=5, dpi=300)
-pdf("myfig1.pdf", width=5, height=5)
+ggsave("myfig1.tiff", figure1, units="in", width=5, height=5, dpi=300)
+tiff("myfig1.tiff", width=5, height=5)
 ggplot(myfig1,aes(x = Treatment, y = emmean)) + 
   geom_bar(position=position_dodge(), stat="identity") +
   geom_errorbar(aes(ymax=emmean+SE, ymin=emmean-SE),

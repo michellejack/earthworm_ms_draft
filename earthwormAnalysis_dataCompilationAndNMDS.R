@@ -117,7 +117,7 @@ col.gr <- c("red", "gray40", "black") #red corresponds to invaded, gray to pulle
 size<-log(allData$mass+1)*1.5 #for setting size of points proportional to worm biomass
 
 #output
-svg(filename=".\\output\\nmds_withFrax.svg", 
+tiff(filename=".\\output\\nmds_withFrax.tiff", 
     width=6.5, 
     height=6.5)
 
